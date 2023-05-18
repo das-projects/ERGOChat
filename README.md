@@ -1,11 +1,11 @@
-# ChatGPT + Enterprise data with Azure OpenAI and Cognitive Search
+# ERGO ChatGPT
 
 [![Open in GitHub Codespaces](https://img.shields.io/static/v1?style=for-the-badge&label=GitHub+Codespaces&message=Open&color=brightgreen&logo=github)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=599293758&machine=standardLinux32gb&devcontainer_path=.devcontainer%2Fdevcontainer.json&location=WestUs2)
 [![Open in Remote - Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/azure-samples/azure-search-openai-demo)
 
-This sample demonstrates a few approaches for creating ChatGPT-like experiences over your own data using the Retrieval Augmented Generation pattern. It uses Azure OpenAI Service to access the ChatGPT model (gpt-35-turbo), and Azure Cognitive Search for data indexing and retrieval.
+We want to experiment with creating ChatGPT-like experience on ERGO data using the Retrieval Augmented Generation pattern. It uses Azure OpenAI Service to access the ChatGPT model (gpt-35-turbo), and Azure Cognitive Search for data indexing and retrieval.
 
-The repo includes sample data so it's ready to try end to end. In this sample application we use a fictitious company called Contoso Electronics, and the experience allows its employees to ask questions about the benefits, internal policies, as well as job descriptions and roles.
+The repo includes public pdf files downloaded from the ergo.de website. We want to explore how to create deployable chat bots which can answer questions about ERGO products.
 
 ![RAG Architecture](docs/appcomponents.png)
 
@@ -19,10 +19,6 @@ The repo includes sample data so it's ready to try end to end. In this sample ap
 ![Chat screen](docs/chatscreen.png)
 
 ## Getting Started
-
-> **IMPORTANT:** In order to deploy and run this example, you'll need an **Azure subscription with access enabled for the Azure OpenAI service**. You can request access [here](https://aka.ms/oaiapply). You can also visit [here](https://azure.microsoft.com/free/cognitive-search/) to get some free Azure credits to get you started.
-
-> **AZURE RESOURCE COSTS** by default this sample will create Azure App Service and Azure Cognitive Search resources that have a monthly cost, as well as Form Recognizer resource that has cost per document page. You can switch them to free versions of each of them if you want to avoid this cost by changing the parameters file under the infra folder (though there are some limits to consider; for example, you can have up to 1 free Cognitive Search resource per subscription, and the free Form Recognizer resource only analyzes the first 2 pages of each document.)
 
 ### Prerequisites
 
@@ -47,25 +43,13 @@ You can run this repo virtually by using GitHub Codespaces or VS Code Remote Con
 
 ### Installation
 
-#### Project Initialization
-
-1. Create a new folder and switch to it in the terminal
-1. Run `azd auth login`
-1. Run `azd init -t azure-search-openai-demo`
-    * For the target location, the regions that currently support the models used in this sample are **East US** or **South Central US**. For an up-to-date list of regions and models, check [here](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/concepts/models)
-
 #### Starting from scratch:
 
 Execute the following command, if you don't have any pre-existing Azure services and want to start from a fresh deployment.
-
-1. Run `azd up` - This will provision Azure resources and deploy this sample to those resources, including building the search index based on the files found in the `./data` folder.
-1. After the application has been successfully deployed you will see a URL printed to the console.  Click that URL to interact with the application in your browser.  
-
-It will look like the following:
-
-!['Output from running azd up'](assets/endpoint.png)
-    
-> NOTE: It may take a minute for the application to be fully deployed. If you see a "Python Developer" welcome screen, then wait a minute and refresh the page.
+1. Run `azd auth login`
+2. Run `azd up` - This will provision Azure resources and deploy this sample to those resources, including building the search index based on the files found in the `./data` folder.
+* For the target location, the regions that currently support the models used in this sample are **East US** or **South Central US**. For an up-to-date list of regions and models, check [here](https://learn.microsoft.com/en-us/azure/cognitive-services/openai/concepts/models)
+* After the application has been successfully deployed you will see a URL printed to the console.  Click that URL to interact with the application in your browser.
 
 #### Use existing resources:
 
@@ -109,18 +93,3 @@ Once in the web app:
 * [Revolutionize your Enterprise Data with ChatGPT: Next-gen Apps w/ Azure OpenAI and Cognitive Search](https://aka.ms/entgptsearchblog)
 * [Azure Cognitive Search](https://learn.microsoft.com/azure/search/search-what-is-azure-search)
 * [Azure OpenAI Service](https://learn.microsoft.com/azure/cognitive-services/openai/overview)
-
-### Note
->Note: The PDF documents used in this demo contain information generated using a language model (Azure OpenAI Service). The information contained in these documents is only for demonstration purposes and does not reflect the opinions or beliefs of Microsoft. Microsoft makes no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability or availability with respect to the information contained in this document. All rights reserved to Microsoft.
-
-### FAQ
-
-***Question***: Why do we need to break up the PDFs into chunks when Azure Cognitive Search supports searching large documents?
-
-***Answer***: Chunking allows us to limit the amount of information we send to OpenAI due to token limits. By breaking up the content, it allows us to easily find potential chunks of text that we can inject into OpenAI. The method of chunking we use leverages a sliding window of text such that sentences that end one chunk will start the next. This allows us to reduce the chance of losing the context of the text.
-
-### Troubleshooting
-
-If you see this error while running `azd deploy`: `read /tmp/azd1992237260/backend_env/lib64: is a directory`, then delete the `./app/backend/backend_env folder` and re-run the `azd deploy` command.  This issue is being tracked here: https://github.com/Azure/azure-dev/issues/1237
-
-If the web app fails to deploy and you receive a '404 Not Found' message in your browser, run 'azd deploy'. 
